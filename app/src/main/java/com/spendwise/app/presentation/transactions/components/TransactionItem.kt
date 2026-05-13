@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.spendwise.app.domain.model.Category
 import com.spendwise.app.domain.model.Transaction
 import java.time.format.DateTimeFormatter
 
@@ -31,6 +32,18 @@ fun TransactionItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            val categoryIcon = Category.defaultCategories.find { it.name == transaction.category }?.icon ?: "📦"
+
+            Surface(
+                shape = MaterialTheme.shapes.small,
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(text = categoryIcon, fontSize = 24.sp)
+                }
+            }
+            Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = transaction.title,

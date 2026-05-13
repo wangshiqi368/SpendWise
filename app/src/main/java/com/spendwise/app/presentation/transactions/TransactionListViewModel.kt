@@ -34,6 +34,10 @@ class TransactionListViewModel @Inject constructor(
                     transactionUseCases.deleteTransaction(event.transaction)
                 }
             }
+            is TransactionListEvent.OnSearchQueryChange -> {
+                _state.value = state.value.copy(searchQuery = event.query)
+                getTransactions() // Refresh with filter
+            }
         }
     }
 
@@ -41,8 +45,20 @@ class TransactionListViewModel @Inject constructor(
         getTransactionsJob?.cancel()
         getTransactionsJob = transactionUseCases.getTransactions()
             .onEach { transactions ->
+                val filteredTransactions = if (state.value.searchQuery.isBlank()) {
+                    transactions
+                } else {
+                    transactions.filter { 
+                        it.title.contains(state.value.searchQuery, ignoreCase = true) ||
+                        it.category.contains(state.value.searchQuery, ignoreCase = true)
+                    }
+                }
+                
+                val total = filteredTransactions.sumOf { it.amount }
+                
                 _state.value = state.value.copy(
-                    transactions = transactions
+                    transactions = filteredTransactions,
+                    totalSpending = total
                 )
             }
             .launchIn(viewModelScope)

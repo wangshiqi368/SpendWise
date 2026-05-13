@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.spendwise.app.domain.model.Category
 import com.spendwise.app.domain.model.Transaction
 import com.spendwise.app.domain.use_case.TransactionUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,8 +27,8 @@ class AddEditTransactionViewModel @Inject constructor(
     private val _transactionAmount = mutableStateOf("")
     val transactionAmount: State<String> = _transactionAmount
 
-    private val _transactionCategory = mutableStateOf("其他")
-    val transactionCategory: State<String> = _transactionCategory
+    private val _selectedCategory = mutableStateOf(Category.defaultCategories.first { it.name == "其他" })
+    val selectedCategory: State<Category> = _selectedCategory
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -42,7 +43,8 @@ class AddEditTransactionViewModel @Inject constructor(
                         currentTransactionId = transaction.id
                         _transactionTitle.value = transaction.title
                         _transactionAmount.value = transaction.amount.toString()
-                        _transactionCategory.value = transaction.category
+                        _selectedCategory.value = Category.defaultCategories.find { it.name == transaction.category }
+                            ?: Category.defaultCategories.first { it.name == "其他" }
                     }
                 }
             }
@@ -58,7 +60,9 @@ class AddEditTransactionViewModel @Inject constructor(
                 _transactionAmount.value = event.value
             }
             is AddEditTransactionEvent.EnteredCategory -> {
-                _transactionCategory.value = event.value
+                Category.defaultCategories.find { it.name == event.value }?.let {
+                    _selectedCategory.value = it
+                }
             }
             is AddEditTransactionEvent.SaveTransaction -> {
                 viewModelScope.launch {
@@ -67,7 +71,7 @@ class AddEditTransactionViewModel @Inject constructor(
                             Transaction(
                                 title = transactionTitle.value,
                                 amount = transactionAmount.value.toDoubleOrNull() ?: 0.0,
-                                category = transactionCategory.value,
+                                category = selectedCategory.value.name,
                                 date = LocalDateTime.now(),
                                 id = currentTransactionId
                             )
