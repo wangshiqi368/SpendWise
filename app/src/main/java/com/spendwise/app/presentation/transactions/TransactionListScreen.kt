@@ -76,12 +76,17 @@ fun TransactionListScreen(
                 items(state.transactions) { transaction ->
                     TransactionItem(
                         transaction = transaction,
+                        onItemClick = {
+                            navController.navigate(
+                                Screen.AddEditTransactionScreen.route +
+                                        "?transactionId=${transaction.id}"
+                            )
+                        },
                         onDeleteClick = {
                             viewModel.onEvent(TransactionListEvent.DeleteTransaction(transaction))
                         }
                     )
-                }
-            }
+                }            }
         }
     }
 }

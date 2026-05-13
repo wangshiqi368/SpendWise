@@ -18,11 +18,14 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun TransactionItem(
     transaction: Transaction,
+    onItemClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onItemClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
