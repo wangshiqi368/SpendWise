@@ -3,13 +3,16 @@ package com.spendwise.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.spendwise.app.presentation.add_edit_transaction.AddEditTransactionScreen
+import com.spendwise.app.presentation.transactions.TransactionListScreen
+import com.spendwise.app.presentation.util.Screen
 import com.spendwise.app.ui.theme.SpendWiseTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,30 +22,34 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             SpendWiseTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("SpendWise")
+                    val navController = rememberNavController()
+                    NavHost(
+                        navController = navController,
+                        startDestination = Screen.TransactionListScreen.route
+                    ) {
+                        composable(route = Screen.TransactionListScreen.route) {
+                            TransactionListScreen(navController = navController)
+                        }
+                        composable(
+                            route = Screen.AddEditTransactionScreen.route +
+                                    "?transactionId={transactionId}",
+                            arguments = listOf(
+                                navArgument(
+                                    name = "transactionId"
+                                ) {
+                                    type = NavType.LongType
+                                    defaultValue = -1L
+                                }
+                            )
+                        ) {
+                            AddEditTransactionScreen(navController = navController)
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SpendWiseTheme {
-        Greeting("SpendWise")
     }
 }
