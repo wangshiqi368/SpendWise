@@ -29,4 +29,10 @@ object DatabaseModule {
     fun provideTransactionDao(db: AppDatabase): TransactionDao {
         return db.transactionDao
     }
+
+    @Provides
+    @Singleton
+    fun provideBudgetDao(db: AppDatabase): BudgetDao {
+        return db.budgetDao
+    }
 }

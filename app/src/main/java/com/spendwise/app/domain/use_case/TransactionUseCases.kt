@@ -4,5 +4,7 @@ data class TransactionUseCases(
     val getTransactions: GetTransactions,
     val deleteTransaction: DeleteTransaction,
     val addTransaction: AddTransaction,
-    val getTransaction: GetTransaction
+    val getTransaction: GetTransaction,
+    val getBudget: GetBudget,
+    val setBudget: SetBudget
 )

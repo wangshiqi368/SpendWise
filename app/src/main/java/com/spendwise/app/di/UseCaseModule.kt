@@ -14,12 +14,17 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideTransactionUseCases(repository: TransactionRepository): TransactionUseCases {
+    fun provideTransactionUseCases(
+        repository: TransactionRepository,
+        budgetRepository: BudgetRepository
+    ): TransactionUseCases {
         return TransactionUseCases(
             getTransactions = GetTransactions(repository),
             deleteTransaction = DeleteTransaction(repository),
             addTransaction = AddTransaction(repository),
-            getTransaction = GetTransaction(repository)
+            getTransaction = GetTransaction(repository),
+            getBudget = GetBudget(budgetRepository),
+            setBudget = SetBudget(budgetRepository)
         )
     }
 }

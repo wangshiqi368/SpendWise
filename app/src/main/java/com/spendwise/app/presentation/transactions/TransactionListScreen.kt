@@ -3,14 +3,18 @@ package com.spendwise.app.presentation.transactions
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,6 +29,7 @@ fun TransactionListScreen(
     viewModel: TransactionListViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
+    var showBudgetDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -63,8 +68,13 @@ fun TransactionListScreen(
                 shape = MaterialTheme.shapes.medium
             )
 
-            // Summary Card (Dashboard)
-            SummaryCard(totalSpending = state.totalSpending, count = state.transactions.size)
+            // Summary Card (Dashboard) with Budget
+            SummaryCard(
+                totalSpending = state.totalSpending,
+                count = state.transactions.size,
+                monthlyBudget = state.monthlyBudget,
+                onEditBudgetClick = { showBudgetDialog = true }
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -86,13 +96,37 @@ fun TransactionListScreen(
                             viewModel.onEvent(TransactionListEvent.DeleteTransaction(transaction))
                         }
                     )
-                }            }
+                }
+            }
         }
+    }
+
+    if (showBudgetDialog) {
+        BudgetDialog(
+            currentBudget = state.monthlyBudget,
+            onDismiss = { showBudgetDialog = false },
+            onConfirm = { amount ->
+                viewModel.onEvent(TransactionListEvent.UpdateBudget(amount))
+                showBudgetDialog = false
+            }
+        )
     }
 }
 
 @Composable
-fun SummaryCard(totalSpending: Double, count: Int) {
+fun SummaryCard(
+    totalSpending: Double,
+    count: Int,
+    monthlyBudget: Double,
+    onEditBudgetClick: () -> Unit
+) {
+    val progress = if (monthlyBudget > 0) (totalSpending / monthlyBudget).toFloat().coerceIn(0f, 1f) else 0f
+    val progressColor = when {
+        progress >= 0.9f -> Color.Red
+        progress >= 0.7f -> Color(0xFFFFA500) // Orange
+        else -> MaterialTheme.colorScheme.primary
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -102,11 +136,25 @@ fun SummaryCard(totalSpending: Double, count: Int) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = "本月总支出", fontSize = 14.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = androidx.compose.ui.Alignment.Bottom
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "本月总支出", fontSize = 14.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                IconButton(onClick = onEditBudgetClick, modifier = Modifier.size(24.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit budget",
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
             ) {
                 Text(
                     text = "¥${String.format("%.2f", totalSpending)}",
@@ -120,6 +168,81 @@ fun SummaryCard(totalSpending: Double, count: Int) {
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                 )
             }
+
+            if (monthlyBudget > 0) {
+                Spacer(modifier = Modifier.height(16.dp))
+                LinearProgressIndicator(
+                    progress = progress,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp),
+                    color = progressColor,
+                    trackColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f)
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "预算: ¥${String.format("%.0f", monthlyBudget)}",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    )
+                    Text(
+                        text = "${(progress * 100).toInt()}%",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = progressColor
+                    )
+                }
+            } else {
+                TextButton(
+                    onClick = onEditBudgetClick,
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text(text = "+ 设置月度预算", fontSize = 12.sp)
+                }
+            }
         }
     }
+}
+
+@Composable
+fun BudgetDialog(
+    currentBudget: Double,
+    onDismiss: () -> Unit,
+    onConfirm: (Double) -> Unit
+) {
+    var text by remember { mutableStateOf(if (currentBudget > 0) currentBudget.toString() else "") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "设置月度预算") },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("预算金额") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    text.toDoubleOrNull()?.let { onConfirm(it) }
+                }
+            ) {
+                Text("确定")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
+            }
+        }
+    )
 }

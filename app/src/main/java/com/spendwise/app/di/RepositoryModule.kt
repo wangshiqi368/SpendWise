@@ -20,4 +20,12 @@ object RepositoryModule {
     ): TransactionRepository {
         return TransactionRepositoryImpl(dao)
     }
+
+    @Provides
+    @Singleton
+    fun provideBudgetRepository(
+        dao: BudgetDao
+    ): BudgetRepository {
+        return BudgetRepositoryImpl(dao)
+    }
 }

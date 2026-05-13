@@ -20,11 +20,16 @@ class TransactionListViewModel @Inject constructor(
 
     private val _state = mutableStateOf(TransactionListState())
     val state: State<TransactionListState> = _state
-
+import com.spendwise.app.domain.model.Budget
+import java.time.format.DateTimeFormatter
+import java.time.LocalDateTime
+...
     private var getTransactionsJob: Job? = null
+    private var getBudgetJob: Job? = null
 
     init {
         getTransactions()
+        getBudget()
     }
 
     fun onEvent(event: TransactionListEvent) {
@@ -38,10 +43,33 @@ class TransactionListViewModel @Inject constructor(
                 _state.value = state.value.copy(searchQuery = event.query)
                 getTransactions() // Refresh with filter
             }
+            is TransactionListEvent.UpdateBudget -> {
+                viewModelScope.launch {
+                    transactionUseCases.setBudget(
+                        Budget(
+                            monthlyLimit = event.amount,
+                            month = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM"))
+                        )
+                    )
+                }
+            }
         }
     }
 
+    private fun getBudget() {
+        getBudgetJob?.cancel()
+        val currentMonth = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM"))
+        getBudgetJob = transactionUseCases.getBudget(currentMonth)
+            .onEach { budget ->
+                _state.value = state.value.copy(
+                    monthlyBudget = budget?.monthlyLimit ?: 0.0
+                )
+            }
+            .launchIn(viewModelScope)
+    }
+
     private fun getTransactions() {
+...
         getTransactionsJob?.cancel()
         getTransactionsJob = transactionUseCases.getTransactions()
             .onEach { transactions ->
