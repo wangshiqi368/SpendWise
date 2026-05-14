@@ -4,13 +4,19 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.spendwise.app.data.util.CsvExporter
+import com.spendwise.app.domain.model.Budget
 import com.spendwise.app.domain.model.Transaction
 import com.spendwise.app.domain.use_case.TransactionUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,10 +26,10 @@ class TransactionListViewModel @Inject constructor(
 
     private val _state = mutableStateOf(TransactionListState())
     val state: State<TransactionListState> = _state
-import com.spendwise.app.domain.model.Budget
-import java.time.format.DateTimeFormatter
-import java.time.LocalDateTime
-...
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
     private var getTransactionsJob: Job? = null
     private var getBudgetJob: Job? = null
 
@@ -53,7 +59,17 @@ import java.time.LocalDateTime
                     )
                 }
             }
+            is TransactionListEvent.ExportToCsv -> {
+                viewModelScope.launch {
+                    val csvData = CsvExporter.transactionsToCsv(state.value.transactions)
+                    _eventFlow.emit(UiEvent.ExportCsv(csvData))
+                }
+            }
         }
+    }
+
+    sealed class UiEvent {
+        data class ExportCsv(val csvData: String) : UiEvent()
     }
 
     private fun getBudget() {
@@ -69,7 +85,6 @@ import java.time.LocalDateTime
     }
 
     private fun getTransactions() {
-...
         getTransactionsJob?.cancel()
         getTransactionsJob = transactionUseCases.getTransactions()
             .onEach { transactions ->

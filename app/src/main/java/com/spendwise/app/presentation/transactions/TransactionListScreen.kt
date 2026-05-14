@@ -1,5 +1,7 @@
 package com.spendwise.app.presentation.transactions
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,19 +10,25 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.spendwise.app.presentation.transactions.components.TransactionItem
 import com.spendwise.app.presentation.util.Screen
+import kotlinx.coroutines.flow.collectLatest
+import java.io.File
+import java.io.FileOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,11 +38,27 @@ fun TransactionListScreen(
 ) {
     val state = viewModel.state.value
     var showBudgetDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is TransactionListViewModel.UiEvent.ExportCsv -> {
+                    exportAndShareCsv(context, event.csvData)
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "SpendWise", fontWeight = FontWeight.Bold) }
+                title = { Text(text = "SpendWise", fontWeight = FontWeight.Bold) },
+                actions = {
+                    IconButton(onClick = { viewModel.onEvent(TransactionListEvent.ExportToCsv) }) {
+                        Icon(imageVector = Icons.Default.Share, contentDescription = "Export CSV")
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -110,6 +134,31 @@ fun TransactionListScreen(
                 showBudgetDialog = false
             }
         )
+    }
+}
+
+private fun exportAndShareCsv(context: Context, csvData: String) {
+    try {
+        val fileName = "SpendWise_Export_${System.currentTimeMillis()}.csv"
+        val file = File(context.cacheDir, fileName)
+        FileOutputStream(file).use {
+            it.write(csvData.toByteArray())
+        }
+
+        val contentUri = FileProvider.getUriForFile(
+            context,
+            "com.spendwise.app.fileprovider",
+            file
+        )
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/csv"
+            putExtra(Intent.EXTRA_STREAM, contentUri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(Intent.createChooser(intent, "分享账单导出文件"))
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 }
 
