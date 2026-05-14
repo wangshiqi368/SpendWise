@@ -7,10 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,6 +35,7 @@ fun TransactionListScreen(
 ) {
     val state = viewModel.state.value
     var showBudgetDialog by remember { mutableStateOf(false) }
+    var transactionToDelete by remember { mutableStateOf<com.spendwise.app.domain.model.Transaction?>(null) }
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
@@ -50,9 +48,6 @@ fun TransactionListScreen(
         }
     }
 
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.PieChart
-...
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -108,24 +103,31 @@ import androidx.compose.material.icons.filled.PieChart
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(state.transactions) { transaction ->
-                    TransactionItem(
-                        transaction = transaction,
-                        onItemClick = {
-                            navController.navigate(
-                                Screen.AddEditTransactionScreen.route +
-                                        "?transactionId=${transaction.id}"
-                            )
-                        },
-                        onDeleteClick = {
-                            viewModel.onEvent(TransactionListEvent.DeleteTransaction(transaction))
-                        }
-                    )
+            if (state.transactions.isEmpty()) {
+                EmptyState(isSearching = state.searchQuery.isNotBlank())
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(
+                        items = state.transactions,
+                        key = { it.id ?: 0 }
+                    ) { transaction ->
+                        TransactionItem(
+                            transaction = transaction,
+                            onItemClick = {
+                                navController.navigate(
+                                    Screen.AddEditTransactionScreen.route +
+                                            "?transactionId=${transaction.id}"
+                                )
+                            },
+                            onDeleteClick = {
+                                transactionToDelete = transaction
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -139,6 +141,58 @@ import androidx.compose.material.icons.filled.PieChart
                 viewModel.onEvent(TransactionListEvent.UpdateBudget(amount))
                 showBudgetDialog = false
             }
+        )
+    }
+
+    transactionToDelete?.let { transaction ->
+        AlertDialog(
+            onDismissRequest = { transactionToDelete = null },
+            title = { Text(text = "确认删除？") },
+            text = { Text(text = "您确定要删除“${transaction.title}”吗？此操作不可撤销。") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.onEvent(TransactionListEvent.DeleteTransaction(transaction))
+                        transactionToDelete = null
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("删除")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { transactionToDelete = null }) {
+                    Text("取消")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun EmptyState(isSearching: Boolean) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = if (isSearching) "🔍" else "📝",
+            fontSize = 64.sp
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = if (isSearching) "未找到匹配的账单" else "还没有账单记录",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.Gray
+        )
+        Text(
+            text = if (isSearching) "换个关键词试试吧" else "点击下方的 + 开始记账吧",
+            fontSize = 14.sp,
+            color = Color.LightGray
         )
     }
 }
