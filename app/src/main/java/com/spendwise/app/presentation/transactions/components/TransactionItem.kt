@@ -56,12 +56,12 @@ fun TransactionItem(
                 Text(
                     text = transaction.category,
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = transaction.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
                     fontSize = 12.sp,
-                    color = Color.LightGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
