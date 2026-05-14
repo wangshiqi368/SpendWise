@@ -20,6 +20,8 @@ import com.spendwise.app.domain.repository.TransactionRepository;
 import com.spendwise.app.domain.use_case.TransactionUseCases;
 import com.spendwise.app.presentation.add_edit_transaction.AddEditTransactionViewModel;
 import com.spendwise.app.presentation.add_edit_transaction.AddEditTransactionViewModel_HiltModules_KeyModule_ProvideFactory;
+import com.spendwise.app.presentation.settings.SettingsViewModel;
+import com.spendwise.app.presentation.settings.SettingsViewModel_HiltModules_KeyModule_ProvideFactory;
 import com.spendwise.app.presentation.statistics.StatisticsViewModel;
 import com.spendwise.app.presentation.statistics.StatisticsViewModel_HiltModules_KeyModule_ProvideFactory;
 import com.spendwise.app.presentation.transactions.TransactionListViewModel;
@@ -381,7 +383,7 @@ public final class DaggerSpendWiseApplication_HiltComponents_SingletonC {
 
     @Override
     public Set<String> getViewModelKeys() {
-      return SetBuilder.<String>newSetBuilder(3).add(AddEditTransactionViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(StatisticsViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(TransactionListViewModel_HiltModules_KeyModule_ProvideFactory.provide()).build();
+      return SetBuilder.<String>newSetBuilder(4).add(AddEditTransactionViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(SettingsViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(StatisticsViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(TransactionListViewModel_HiltModules_KeyModule_ProvideFactory.provide()).build();
     }
 
     @Override
@@ -411,6 +413,8 @@ public final class DaggerSpendWiseApplication_HiltComponents_SingletonC {
 
     private Provider<AddEditTransactionViewModel> addEditTransactionViewModelProvider;
 
+    private Provider<SettingsViewModel> settingsViewModelProvider;
+
     private Provider<StatisticsViewModel> statisticsViewModelProvider;
 
     private Provider<TransactionListViewModel> transactionListViewModelProvider;
@@ -429,13 +433,14 @@ public final class DaggerSpendWiseApplication_HiltComponents_SingletonC {
     private void initialize(final SavedStateHandle savedStateHandleParam,
         final ViewModelLifecycle viewModelLifecycleParam) {
       this.addEditTransactionViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
-      this.statisticsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
-      this.transactionListViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
+      this.settingsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
+      this.statisticsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
+      this.transactionListViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
     }
 
     @Override
     public Map<String, javax.inject.Provider<ViewModel>> getHiltViewModelMap() {
-      return MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(3).put("com.spendwise.app.presentation.add_edit_transaction.AddEditTransactionViewModel", ((Provider) addEditTransactionViewModelProvider)).put("com.spendwise.app.presentation.statistics.StatisticsViewModel", ((Provider) statisticsViewModelProvider)).put("com.spendwise.app.presentation.transactions.TransactionListViewModel", ((Provider) transactionListViewModelProvider)).build();
+      return MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(4).put("com.spendwise.app.presentation.add_edit_transaction.AddEditTransactionViewModel", ((Provider) addEditTransactionViewModelProvider)).put("com.spendwise.app.presentation.settings.SettingsViewModel", ((Provider) settingsViewModelProvider)).put("com.spendwise.app.presentation.statistics.StatisticsViewModel", ((Provider) statisticsViewModelProvider)).put("com.spendwise.app.presentation.transactions.TransactionListViewModel", ((Provider) transactionListViewModelProvider)).build();
     }
 
     @Override
@@ -467,10 +472,13 @@ public final class DaggerSpendWiseApplication_HiltComponents_SingletonC {
           case 0: // com.spendwise.app.presentation.add_edit_transaction.AddEditTransactionViewModel 
           return (T) new AddEditTransactionViewModel(singletonCImpl.provideTransactionUseCasesProvider.get(), ApplicationContextModule_ProvideApplicationFactory.provideApplication(singletonCImpl.applicationContextModule), viewModelCImpl.savedStateHandle);
 
-          case 1: // com.spendwise.app.presentation.statistics.StatisticsViewModel 
+          case 1: // com.spendwise.app.presentation.settings.SettingsViewModel 
+          return (T) new SettingsViewModel(singletonCImpl.provideTransactionUseCasesProvider.get());
+
+          case 2: // com.spendwise.app.presentation.statistics.StatisticsViewModel 
           return (T) new StatisticsViewModel(singletonCImpl.provideTransactionUseCasesProvider.get());
 
-          case 2: // com.spendwise.app.presentation.transactions.TransactionListViewModel 
+          case 3: // com.spendwise.app.presentation.transactions.TransactionListViewModel 
           return (T) new TransactionListViewModel(singletonCImpl.provideTransactionUseCasesProvider.get());
 
           default: throw new AssertionError(id);

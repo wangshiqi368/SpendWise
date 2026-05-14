@@ -4,6 +4,7 @@ import com.spendwise.app.di.DatabaseModule;
 import com.spendwise.app.di.RepositoryModule;
 import com.spendwise.app.di.UseCaseModule;
 import com.spendwise.app.presentation.add_edit_transaction.AddEditTransactionViewModel_HiltModules;
+import com.spendwise.app.presentation.settings.SettingsViewModel_HiltModules;
 import com.spendwise.app.presentation.statistics.StatisticsViewModel_HiltModules;
 import com.spendwise.app.presentation.transactions.TransactionListViewModel_HiltModules;
 import dagger.Binds;
@@ -162,6 +163,7 @@ public final class SpendWiseApplication_HiltComponents {
           AddEditTransactionViewModel_HiltModules.KeyModule.class,
           HiltWrapper_ActivityRetainedComponentManager_LifecycleModule.class,
           HiltWrapper_SavedStateHandleModule.class,
+          SettingsViewModel_HiltModules.KeyModule.class,
           ActivityCBuilderModule.class,
           ViewModelCBuilderModule.class,
           StatisticsViewModel_HiltModules.KeyModule.class,
@@ -203,6 +205,7 @@ public final class SpendWiseApplication_HiltComponents {
       modules = {
           AddEditTransactionViewModel_HiltModules.BindsModule.class,
           HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
+          SettingsViewModel_HiltModules.BindsModule.class,
           StatisticsViewModel_HiltModules.BindsModule.class,
           TransactionListViewModel_HiltModules.BindsModule.class
       }

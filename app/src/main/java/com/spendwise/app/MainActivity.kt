@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.spendwise.app.presentation.add_edit_transaction.AddEditTransactionScreen
+import com.spendwise.app.presentation.settings.SettingsScreen
 import com.spendwise.app.presentation.statistics.StatisticsScreen
 import com.spendwise.app.presentation.transactions.TransactionListScreen
 import com.spendwise.app.presentation.util.Screen
@@ -36,6 +37,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.StatisticsScreen.route) {
                             StatisticsScreen(navController = navController)
+                        }
+                        composable(route = Screen.SettingsScreen.route) {
+                            SettingsScreen(navController = navController)
                         }
                         composable(
                             route = Screen.AddEditTransactionScreen.route +

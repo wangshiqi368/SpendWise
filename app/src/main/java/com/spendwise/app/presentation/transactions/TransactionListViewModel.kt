@@ -4,10 +4,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.spendwise.app.data.util.CsvExporter
 import com.spendwise.app.domain.model.Budget
 import com.spendwise.app.domain.model.Transaction
 import com.spendwise.app.domain.use_case.TransactionUseCases
+import com.spendwise.app.domain.util.CurrencyConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -54,7 +54,8 @@ class TransactionListViewModel @Inject constructor(
                     transactionUseCases.setBudget(
                         Budget(
                             monthlyLimit = event.amount,
-                            month = state.value.selectedMonth
+                            month = state.value.selectedMonth,
+                            currency = com.spendwise.app.domain.model.Currency.CNY
                         )
                     )
                 }
@@ -64,17 +65,11 @@ class TransactionListViewModel @Inject constructor(
                 getTransactions()
                 getBudget()
             }
-            is TransactionListEvent.ExportToCsv -> {
-                viewModelScope.launch {
-                    val csvData = CsvExporter.transactionsToCsv(state.value.transactions)
-                    _eventFlow.emit(UiEvent.ExportCsv(csvData))
-                }
-            }
         }
     }
 
     sealed class UiEvent {
-        data class ExportCsv(val csvData: String) : UiEvent()
+        // No UI events needed for now
     }
 
     private fun getBudget() {
@@ -105,7 +100,9 @@ class TransactionListViewModel @Inject constructor(
                     }
                 }
                 
-                val total = filteredTransactions.sumOf { it.amount }
+                val total = filteredTransactions.sumOf { 
+                    CurrencyConverter.convertToCny(it.amount, it.currency)
+                }
                 
                 _state.value = state.value.copy(
                     transactions = filteredTransactions,

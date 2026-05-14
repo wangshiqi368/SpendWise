@@ -1,7 +1,5 @@
 package com.spendwise.app.presentation.transactions
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,19 +12,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.spendwise.app.presentation.transactions.components.TransactionItem
 import com.spendwise.app.presentation.util.Screen
-import kotlinx.coroutines.flow.collectLatest
-import java.io.File
-import java.io.FileOutputStream
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
@@ -40,17 +33,6 @@ fun TransactionListScreen(
     var showBudgetDialog by remember { mutableStateOf(false) }
     var showMonthPicker by remember { mutableStateOf(false) }
     var transactionToDelete by remember { mutableStateOf<com.spendwise.app.domain.model.Transaction?>(null) }
-    val context = LocalContext.current
-
-    LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is TransactionListViewModel.UiEvent.ExportCsv -> {
-                    exportAndShareCsv(context, event.csvData)
-                }
-            }
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -68,8 +50,8 @@ fun TransactionListScreen(
                     IconButton(onClick = { navController.navigate(Screen.StatisticsScreen.route) }) {
                         Icon(imageVector = Icons.Default.Info, contentDescription = "Statistics")
                     }
-                    IconButton(onClick = { viewModel.onEvent(TransactionListEvent.ExportToCsv) }) {
-                        Icon(imageVector = Icons.Default.Share, contentDescription = "Export CSV")
+                    IconButton(onClick = { navController.navigate(Screen.SettingsScreen.route) }) {
+                        Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings")
                     }
                 }
             )
@@ -261,31 +243,6 @@ fun EmptyState(isSearching: Boolean) {
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-    }
-}
-
-private fun exportAndShareCsv(context: Context, csvData: String) {
-    try {
-        val fileName = "SpendWise_Export_${System.currentTimeMillis()}.csv"
-        val file = File(context.cacheDir, fileName)
-        FileOutputStream(file).use {
-            it.write(csvData.toByteArray())
-        }
-
-        val contentUri = FileProvider.getUriForFile(
-            context,
-            "com.spendwise.app.fileprovider",
-            file
-        )
-
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/csv"
-            putExtra(Intent.EXTRA_STREAM, contentUri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        context.startActivity(Intent.createChooser(intent, "分享账单导出文件"))
-    } catch (e: Exception) {
-        e.printStackTrace()
     }
 }
 
