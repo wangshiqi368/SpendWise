@@ -1,6 +1,7 @@
 package com.spendwise.app.di
 
 import com.spendwise.app.domain.repository.BudgetRepository
+import com.spendwise.app.domain.repository.ExchangeRateRepository
 import com.spendwise.app.domain.repository.TransactionRepository
 import com.spendwise.app.domain.use_case.*
 import dagger.Module
@@ -17,7 +18,8 @@ object UseCaseModule {
     @Singleton
     fun provideTransactionUseCases(
         repository: TransactionRepository,
-        budgetRepository: BudgetRepository
+        budgetRepository: BudgetRepository,
+        exchangeRateRepository: ExchangeRateRepository
     ): TransactionUseCases {
         return TransactionUseCases(
             getTransactions = GetTransactions(repository),
@@ -26,7 +28,9 @@ object UseCaseModule {
             getTransaction = GetTransaction(repository),
             getBudget = GetBudget(budgetRepository),
             setBudget = SetBudget(budgetRepository),
-            getCategoryStats = GetCategoryStats()
+            getCategoryStats = GetCategoryStats(),
+            syncExchangeRates = SyncExchangeRates(exchangeRateRepository),
+            getExchangeRates = GetExchangeRates(exchangeRateRepository)
         )
     }
 }

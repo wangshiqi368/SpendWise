@@ -11,9 +11,24 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+import com.spendwise.app.data.local.ExchangeRateDao
+import com.spendwise.app.data.remote.ExchangeRateApi
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
+
+    @Provides
+    @Singleton
+    fun provideExchangeRateApi(): ExchangeRateApi {
+        return Retrofit.Builder()
+            .baseUrl(ExchangeRateApi.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ExchangeRateApi::class.java)
+    }
 
     @Provides
     @Singleton
@@ -23,7 +38,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
         )
-            .addMigrations(AppDatabase.MIGRATION_2_3, AppDatabase.MIGRATION_3_4)
+            .addMigrations(AppDatabase.MIGRATION_2_3, AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5)
             .build()
     }
 
@@ -37,5 +52,11 @@ object DatabaseModule {
     @Singleton
     fun provideBudgetDao(db: AppDatabase): BudgetDao {
         return db.budgetDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideExchangeRateDao(db: AppDatabase): ExchangeRateDao {
+        return db.exchangeRateDao
     }
 }

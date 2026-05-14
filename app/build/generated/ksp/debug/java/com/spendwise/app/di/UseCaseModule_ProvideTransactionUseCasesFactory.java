@@ -1,6 +1,7 @@
 package com.spendwise.app.di;
 
 import com.spendwise.app.domain.repository.BudgetRepository;
+import com.spendwise.app.domain.repository.ExchangeRateRepository;
 import com.spendwise.app.domain.repository.TransactionRepository;
 import com.spendwise.app.domain.use_case.TransactionUseCases;
 import dagger.internal.DaggerGenerated;
@@ -29,26 +30,31 @@ public final class UseCaseModule_ProvideTransactionUseCasesFactory implements Fa
 
   private final Provider<BudgetRepository> budgetRepositoryProvider;
 
+  private final Provider<ExchangeRateRepository> exchangeRateRepositoryProvider;
+
   public UseCaseModule_ProvideTransactionUseCasesFactory(
       Provider<TransactionRepository> repositoryProvider,
-      Provider<BudgetRepository> budgetRepositoryProvider) {
+      Provider<BudgetRepository> budgetRepositoryProvider,
+      Provider<ExchangeRateRepository> exchangeRateRepositoryProvider) {
     this.repositoryProvider = repositoryProvider;
     this.budgetRepositoryProvider = budgetRepositoryProvider;
+    this.exchangeRateRepositoryProvider = exchangeRateRepositoryProvider;
   }
 
   @Override
   public TransactionUseCases get() {
-    return provideTransactionUseCases(repositoryProvider.get(), budgetRepositoryProvider.get());
+    return provideTransactionUseCases(repositoryProvider.get(), budgetRepositoryProvider.get(), exchangeRateRepositoryProvider.get());
   }
 
   public static UseCaseModule_ProvideTransactionUseCasesFactory create(
       Provider<TransactionRepository> repositoryProvider,
-      Provider<BudgetRepository> budgetRepositoryProvider) {
-    return new UseCaseModule_ProvideTransactionUseCasesFactory(repositoryProvider, budgetRepositoryProvider);
+      Provider<BudgetRepository> budgetRepositoryProvider,
+      Provider<ExchangeRateRepository> exchangeRateRepositoryProvider) {
+    return new UseCaseModule_ProvideTransactionUseCasesFactory(repositoryProvider, budgetRepositoryProvider, exchangeRateRepositoryProvider);
   }
 
   public static TransactionUseCases provideTransactionUseCases(TransactionRepository repository,
-      BudgetRepository budgetRepository) {
-    return Preconditions.checkNotNullFromProvides(UseCaseModule.INSTANCE.provideTransactionUseCases(repository, budgetRepository));
+      BudgetRepository budgetRepository, ExchangeRateRepository exchangeRateRepository) {
+    return Preconditions.checkNotNullFromProvides(UseCaseModule.INSTANCE.provideTransactionUseCases(repository, budgetRepository, exchangeRateRepository));
   }
 }

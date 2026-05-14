@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.spendwise.app.presentation.transactions.TransactionListViewModelTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-05-14T18:42:38.479Z" hostname="wangshiqideMacBook-Air.local" time="0.109">
+<testsuite name="com.spendwise.app.presentation.transactions.TransactionListViewModelTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-05-14T18:50:24.686Z" hostname="wangshiqideMacBook-Air.local" time="0.237">
   <properties/>
-  <testcase name="search query filters transactions by title and category" classname="com.spendwise.app.presentation.transactions.TransactionListViewModelTest" time="0.103"/>
-  <testcase name="initial state loads transactions for current month only" classname="com.spendwise.app.presentation.transactions.TransactionListViewModelTest" time="0.002"/>
-  <testcase name="changing month loads data for that month" classname="com.spendwise.app.presentation.transactions.TransactionListViewModelTest" time="0.004"/>
+  <testcase name="search query filters transactions by title and category" classname="com.spendwise.app.presentation.transactions.TransactionListViewModelTest" time="0.227"/>
+  <testcase name="initial state loads transactions for current month only" classname="com.spendwise.app.presentation.transactions.TransactionListViewModelTest" time="0.005"/>
+  <testcase name="changing month loads data for that month" classname="com.spendwise.app.presentation.transactions.TransactionListViewModelTest" time="0.005"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

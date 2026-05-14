@@ -8,14 +8,20 @@ import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 import com.spendwise.app.data.local.AppDatabase;
 import com.spendwise.app.data.local.BudgetDao;
+import com.spendwise.app.data.local.ExchangeRateDao;
 import com.spendwise.app.data.local.TransactionDao;
+import com.spendwise.app.data.remote.ExchangeRateApi;
 import com.spendwise.app.di.DatabaseModule_ProvideAppDatabaseFactory;
 import com.spendwise.app.di.DatabaseModule_ProvideBudgetDaoFactory;
+import com.spendwise.app.di.DatabaseModule_ProvideExchangeRateApiFactory;
+import com.spendwise.app.di.DatabaseModule_ProvideExchangeRateDaoFactory;
 import com.spendwise.app.di.DatabaseModule_ProvideTransactionDaoFactory;
 import com.spendwise.app.di.RepositoryModule_ProvideBudgetRepositoryFactory;
+import com.spendwise.app.di.RepositoryModule_ProvideExchangeRateRepositoryFactory;
 import com.spendwise.app.di.RepositoryModule_ProvideTransactionRepositoryFactory;
 import com.spendwise.app.di.UseCaseModule_ProvideTransactionUseCasesFactory;
 import com.spendwise.app.domain.repository.BudgetRepository;
+import com.spendwise.app.domain.repository.ExchangeRateRepository;
 import com.spendwise.app.domain.repository.TransactionRepository;
 import com.spendwise.app.domain.use_case.TransactionUseCases;
 import com.spendwise.app.presentation.add_edit_transaction.AddEditTransactionViewModel;
@@ -571,6 +577,12 @@ public final class DaggerSpendWiseApplication_HiltComponents_SingletonC {
 
     private Provider<BudgetRepository> provideBudgetRepositoryProvider;
 
+    private Provider<ExchangeRateApi> provideExchangeRateApiProvider;
+
+    private Provider<ExchangeRateDao> provideExchangeRateDaoProvider;
+
+    private Provider<ExchangeRateRepository> provideExchangeRateRepositoryProvider;
+
     private Provider<TransactionUseCases> provideTransactionUseCasesProvider;
 
     private SingletonCImpl(ApplicationContextModule applicationContextModuleParam) {
@@ -586,6 +598,9 @@ public final class DaggerSpendWiseApplication_HiltComponents_SingletonC {
       this.provideTransactionRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<TransactionRepository>(singletonCImpl, 1));
       this.provideBudgetDaoProvider = DoubleCheck.provider(new SwitchingProvider<BudgetDao>(singletonCImpl, 5));
       this.provideBudgetRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<BudgetRepository>(singletonCImpl, 4));
+      this.provideExchangeRateApiProvider = DoubleCheck.provider(new SwitchingProvider<ExchangeRateApi>(singletonCImpl, 7));
+      this.provideExchangeRateDaoProvider = DoubleCheck.provider(new SwitchingProvider<ExchangeRateDao>(singletonCImpl, 8));
+      this.provideExchangeRateRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<ExchangeRateRepository>(singletonCImpl, 6));
       this.provideTransactionUseCasesProvider = DoubleCheck.provider(new SwitchingProvider<TransactionUseCases>(singletonCImpl, 0));
     }
 
@@ -623,7 +638,7 @@ public final class DaggerSpendWiseApplication_HiltComponents_SingletonC {
       public T get() {
         switch (id) {
           case 0: // com.spendwise.app.domain.use_case.TransactionUseCases 
-          return (T) UseCaseModule_ProvideTransactionUseCasesFactory.provideTransactionUseCases(singletonCImpl.provideTransactionRepositoryProvider.get(), singletonCImpl.provideBudgetRepositoryProvider.get());
+          return (T) UseCaseModule_ProvideTransactionUseCasesFactory.provideTransactionUseCases(singletonCImpl.provideTransactionRepositoryProvider.get(), singletonCImpl.provideBudgetRepositoryProvider.get(), singletonCImpl.provideExchangeRateRepositoryProvider.get());
 
           case 1: // com.spendwise.app.domain.repository.TransactionRepository 
           return (T) RepositoryModule_ProvideTransactionRepositoryFactory.provideTransactionRepository(singletonCImpl.provideTransactionDaoProvider.get());
@@ -639,6 +654,15 @@ public final class DaggerSpendWiseApplication_HiltComponents_SingletonC {
 
           case 5: // com.spendwise.app.data.local.BudgetDao 
           return (T) DatabaseModule_ProvideBudgetDaoFactory.provideBudgetDao(singletonCImpl.provideAppDatabaseProvider.get());
+
+          case 6: // com.spendwise.app.domain.repository.ExchangeRateRepository 
+          return (T) RepositoryModule_ProvideExchangeRateRepositoryFactory.provideExchangeRateRepository(singletonCImpl.provideExchangeRateApiProvider.get(), singletonCImpl.provideExchangeRateDaoProvider.get());
+
+          case 7: // com.spendwise.app.data.remote.ExchangeRateApi 
+          return (T) DatabaseModule_ProvideExchangeRateApiFactory.provideExchangeRateApi();
+
+          case 8: // com.spendwise.app.data.local.ExchangeRateDao 
+          return (T) DatabaseModule_ProvideExchangeRateDaoFactory.provideExchangeRateDao(singletonCImpl.provideAppDatabaseProvider.get());
 
           default: throw new AssertionError(id);
         }

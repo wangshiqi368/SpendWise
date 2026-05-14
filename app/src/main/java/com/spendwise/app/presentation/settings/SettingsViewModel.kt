@@ -30,8 +30,12 @@ class SettingsViewModel @Inject constructor(
             }
             is SettingsEvent.RefreshExchangeRates -> {
                 viewModelScope.launch {
-                    // Placeholder for now
-                    _eventFlow.emit(UiEvent.ShowSnackbar("汇率同步功能即将上线"))
+                    val result = transactionUseCases.syncExchangeRates()
+                    if (result.isSuccess) {
+                        _eventFlow.emit(UiEvent.ShowSnackbar("汇率同步成功"))
+                    } else {
+                        _eventFlow.emit(UiEvent.ShowSnackbar("汇率同步失败，请检查网络"))
+                    }
                 }
             }
         }

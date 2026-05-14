@@ -87,6 +87,7 @@ class TransactionListViewModel @Inject constructor(
         getTransactionsJob?.cancel()
         getTransactionsJob = transactionUseCases.getTransactions()
             .onEach { transactions ->
+                val rates = transactionUseCases.getExchangeRates()
                 val filteredByMonth = transactions.filter {
                     it.date.format(DateTimeFormatter.ofPattern("yyyy-MM")) == state.value.selectedMonth
                 }
@@ -101,7 +102,7 @@ class TransactionListViewModel @Inject constructor(
                 }
                 
                 val total = filteredTransactions.sumOf { 
-                    CurrencyConverter.convertToCny(it.amount, it.currency)
+                    CurrencyConverter.convertToCny(it.amount, it.currency, rates)
                 }
                 
                 _state.value = state.value.copy(

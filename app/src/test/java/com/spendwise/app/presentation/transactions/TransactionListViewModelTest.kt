@@ -4,6 +4,7 @@ import com.spendwise.app.domain.model.Budget
 import com.spendwise.app.domain.model.Transaction
 import com.spendwise.app.domain.use_case.TransactionUseCases
 import com.spendwise.app.util.MainDispatcherRule
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
@@ -35,6 +36,7 @@ class TransactionListViewModelTest {
 
         every { useCases.getTransactions() } returns flowOf(transactions)
         every { useCases.getBudget(any()) } returns flowOf(Budget(2000.0, currentMonth))
+        coEvery { useCases.getExchangeRates() } returns emptyMap() // Mock empty rates or valid ones
 
         viewModel = TransactionListViewModel(useCases)
     }

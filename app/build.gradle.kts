@@ -76,9 +76,14 @@ implementation(libs.androidx.navigation.compose)
 // Coil
 implementation(libs.coil.compose)
 
+// Network
+implementation(libs.retrofit)
+implementation(libs.converter.gson)
+implementation(libs.okhttp)
+implementation(libs.okhttp.logging)
+
 // Testing
-// Testing
-testImplementation(libs.junit)
+    testImplementation(libs.junit)
 testImplementation(libs.mockk)
 testImplementation(libs.kotlinx.coroutines.test)
 androidTestImplementation(libs.androidx.junit)

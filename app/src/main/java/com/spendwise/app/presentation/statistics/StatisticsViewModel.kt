@@ -27,9 +27,10 @@ class StatisticsViewModel @Inject constructor(
     private fun getStats() {
         transactionUseCases.getTransactions()
             .onEach { transactions ->
+                val rates = transactionUseCases.getExchangeRates()
                 // Convert all transactions to CNY for statistics
                 val cnyTransactions = transactions.map { 
-                    it.copy(amount = CurrencyConverter.convertToCny(it.amount, it.currency))
+                    it.copy(amount = CurrencyConverter.convertToCny(it.amount, it.currency, rates))
                 }
                 val stats = transactionUseCases.getCategoryStats(cnyTransactions)
                 _state.value = state.value.copy(
