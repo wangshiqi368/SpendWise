@@ -77,9 +77,11 @@ implementation(libs.androidx.navigation.compose)
 implementation(libs.coil.compose)
 
 // Testing
-...
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
+// Testing
+testImplementation(libs.junit)
+testImplementation(libs.mockk)
+testImplementation(libs.kotlinx.coroutines.test)
+androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso-core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
