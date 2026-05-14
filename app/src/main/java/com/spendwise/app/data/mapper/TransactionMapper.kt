@@ -14,7 +14,8 @@ fun TransactionEntity.toTransaction(): Transaction {
         amount = amount,
         category = category,
         date = LocalDateTime.parse(date, formatter),
-        note = note
+        note = note,
+        imagePath = imagePath
     )
 }
 
@@ -25,6 +26,7 @@ fun Transaction.toTransactionEntity(): TransactionEntity {
         amount = amount,
         category = category,
         date = date.format(formatter),
-        note = note
+        note = note,
+        imagePath = imagePath
     )
 }

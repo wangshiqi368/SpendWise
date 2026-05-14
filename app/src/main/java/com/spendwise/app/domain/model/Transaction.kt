@@ -8,5 +8,6 @@ data class Transaction(
     val amount: Double,
     val category: String,
     val date: LocalDateTime,
-    val note: String? = null
+    val note: String? = null,
+    val imagePath: String? = null
 )

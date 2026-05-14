@@ -70,11 +70,14 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+// Navigation
+implementation(libs.androidx.navigation.compose)
 
-    // Navigation
-    implementation(libs.androidx.navigation.compose)
+// Coil
+implementation(libs.coil.compose)
 
-    // Testing
+// Testing
+...
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso-core)

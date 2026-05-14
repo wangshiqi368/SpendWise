@@ -4,5 +4,6 @@ sealed class AddEditTransactionEvent {
     data class EnteredTitle(val value: String): AddEditTransactionEvent()
     data class EnteredAmount(val value: String): AddEditTransactionEvent()
     data class EnteredCategory(val value: String): AddEditTransactionEvent()
+    data class EnteredImage(val uri: android.net.Uri?): AddEditTransactionEvent()
     object SaveTransaction: AddEditTransactionEvent()
 }

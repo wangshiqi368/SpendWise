@@ -53,16 +53,29 @@ fun TransactionItem(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
+import androidx.compose.material.icons.filled.Attachment
+...
                 Text(
                     text = transaction.category,
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Text(
-                    text = transaction.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = transaction.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+                    if (transaction.imagePath != null) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            imageVector = Icons.Default.Attachment,
+                            contentDescription = "Has attachment",
+                            modifier = Modifier.size(14.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        )
+                    }
+                }
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(

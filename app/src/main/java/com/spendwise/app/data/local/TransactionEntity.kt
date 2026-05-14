@@ -11,5 +11,6 @@ data class TransactionEntity(
     val amount: Double,
     val category: String,
     val date: String, // Stored as ISO string
-    val note: String?
+    val note: String?,
+    val imagePath: String? = null
 )
