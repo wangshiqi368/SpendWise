@@ -1,7 +1,10 @@
 package com.spendwise.app.di
 
+import com.spendwise.app.data.local.BudgetDao
 import com.spendwise.app.data.local.TransactionDao
+import com.spendwise.app.data.repository.BudgetRepositoryImpl
 import com.spendwise.app.data.repository.TransactionRepositoryImpl
+import com.spendwise.app.domain.repository.BudgetRepository
 import com.spendwise.app.domain.repository.TransactionRepository
 import dagger.Module
 import dagger.Provides

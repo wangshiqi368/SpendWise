@@ -66,7 +66,7 @@ fun TransactionListScreen(
                 },
                 actions = {
                     IconButton(onClick = { navController.navigate(Screen.StatisticsScreen.route) }) {
-                        Icon(imageVector = Icons.Default.PieChart, contentDescription = "Statistics")
+                        Icon(imageVector = Icons.Default.Info, contentDescription = "Statistics")
                     }
                     IconButton(onClick = { viewModel.onEvent(TransactionListEvent.ExportToCsv) }) {
                         Icon(imageVector = Icons.Default.Share, contentDescription = "Export CSV")

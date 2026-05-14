@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spendwise.app.domain.model.CategoryStat
 import com.spendwise.app.domain.use_case.TransactionUseCases
+import com.spendwise.app.domain.util.CurrencyConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -23,8 +24,6 @@ class StatisticsViewModel @Inject constructor(
         getStats()
     }
 
-import com.spendwise.app.domain.util.CurrencyConverter
-...
     private fun getStats() {
         transactionUseCases.getTransactions()
             .onEach { transactions ->

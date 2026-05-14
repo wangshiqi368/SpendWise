@@ -3,6 +3,7 @@ package com.spendwise.app.presentation.add_edit_transaction
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -184,7 +185,7 @@ fun AddEditTransactionScreen(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.AddAPhoto, contentDescription = null)
+                            Icon(Icons.Default.Add, contentDescription = null)
                             Text(text = "上传图片", fontSize = 12.sp)
                         }
                     }

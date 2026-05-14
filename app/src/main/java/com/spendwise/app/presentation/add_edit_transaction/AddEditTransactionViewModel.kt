@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spendwise.app.data.util.FileUtil
 import com.spendwise.app.domain.model.Category
+import com.spendwise.app.domain.model.Currency
 import com.spendwise.app.domain.model.Transaction
 import com.spendwise.app.domain.use_case.TransactionUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +34,9 @@ class AddEditTransactionViewModel @Inject constructor(
     private val _selectedCategory = mutableStateOf(Category.defaultCategories.first { it.name == "其他" })
     val selectedCategory: State<Category> = _selectedCategory
 
+    private val _selectedCurrency = mutableStateOf(Currency.CNY)
+    val selectedCurrency: State<Currency> = _selectedCurrency
+
     private val _transactionImage = mutableStateOf<String?>(null)
     val transactionImage: State<String?> = _transactionImage
 
@@ -52,6 +56,7 @@ class AddEditTransactionViewModel @Inject constructor(
                         _selectedCategory.value = Category.defaultCategories.find { it.name == transaction.category }
                             ?: Category.defaultCategories.first { it.name == "其他" }
                         _transactionImage.value = transaction.imagePath
+                        _selectedCurrency.value = transaction.currency
                     }
                 }
             }
@@ -81,6 +86,9 @@ class AddEditTransactionViewModel @Inject constructor(
                     }
                 }
             }
+            is AddEditTransactionEvent.ChangedCurrency -> {
+                _selectedCurrency.value = event.currency
+            }
             is AddEditTransactionEvent.SaveTransaction -> {
                 viewModelScope.launch {
                     try {
@@ -91,7 +99,8 @@ class AddEditTransactionViewModel @Inject constructor(
                                 category = selectedCategory.value.name,
                                 date = LocalDateTime.now(),
                                 id = currentTransactionId,
-                                imagePath = transactionImage.value
+                                imagePath = transactionImage.value,
+                                currency = selectedCurrency.value
                             )
                         )
                         _eventFlow.emit(UiEvent.SaveTransaction)

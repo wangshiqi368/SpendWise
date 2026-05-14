@@ -1,5 +1,6 @@
 package com.spendwise.app.di
 
+import com.spendwise.app.domain.repository.BudgetRepository
 import com.spendwise.app.domain.repository.TransactionRepository
 import com.spendwise.app.domain.use_case.*
 import dagger.Module

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.spendwise.app.domain.use_case.GetCategoryStatsTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-05-14T17:07:47.365Z" hostname="wangshiqideMacBook-Air.local" time="0.008">
+  <properties/>
+  <testcase name="transactions with zero total returns empty stats list" classname="com.spendwise.app.domain.use_case.GetCategoryStatsTest" time="0.0"/>
+  <testcase name="empty transaction list returns empty stats list" classname="com.spendwise.app.domain.use_case.GetCategoryStatsTest" time="0.0"/>
+  <testcase name="valid transactions returns sorted stats with correct percentages" classname="com.spendwise.app.domain.use_case.GetCategoryStatsTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

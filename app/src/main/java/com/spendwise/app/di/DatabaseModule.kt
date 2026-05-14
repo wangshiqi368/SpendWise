@@ -3,6 +3,7 @@ package com.spendwise.app.di
 import android.app.Application
 import androidx.room.Room
 import com.spendwise.app.data.local.AppDatabase
+import com.spendwise.app.data.local.BudgetDao
 import com.spendwise.app.data.local.TransactionDao
 import dagger.Module
 import dagger.Provides

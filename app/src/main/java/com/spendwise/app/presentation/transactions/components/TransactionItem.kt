@@ -1,7 +1,9 @@
 package com.spendwise.app.presentation.transactions.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -53,8 +55,6 @@ fun TransactionItem(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-import androidx.compose.material.icons.filled.Attachment
-...
                 Text(
                     text = transaction.category,
                     fontSize = 14.sp,
@@ -69,7 +69,7 @@ import androidx.compose.material.icons.filled.Attachment
                     if (transaction.imagePath != null) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(
-                            imageVector = Icons.Default.Attachment,
+                            imageVector = Icons.Default.Info,
                             contentDescription = "Has attachment",
                             modifier = Modifier.size(14.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
