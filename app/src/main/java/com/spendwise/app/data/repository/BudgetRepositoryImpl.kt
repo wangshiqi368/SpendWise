@@ -11,13 +11,15 @@ class BudgetRepositoryImpl(
     private val dao: BudgetDao
 ) : BudgetRepository {
 
+import com.spendwise.app.domain.model.Currency
+...
     override fun getBudgetForMonth(month: String): Flow<Budget?> {
         return dao.getBudgetForMonth(month).map { entity ->
-            entity?.let { Budget(it.monthlyLimit, it.month) }
+            entity?.let { Budget(it.monthlyLimit, it.month, Currency.fromCode(it.currency)) }
         }
     }
 
     override suspend fun setBudget(budget: Budget) {
-        dao.insertBudget(BudgetEntity(monthlyLimit = budget.monthlyLimit, month = budget.month))
+        dao.insertBudget(BudgetEntity(monthlyLimit = budget.monthlyLimit, month = budget.month, currency = budget.currency.code))
     }
 }

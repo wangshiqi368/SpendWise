@@ -79,7 +79,7 @@ import androidx.compose.material.icons.filled.Attachment
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "¥${String.format("%.2f", transaction.amount)}",
+                    text = "${transaction.currency.symbol} ${String.format("%.2f", transaction.amount)}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary

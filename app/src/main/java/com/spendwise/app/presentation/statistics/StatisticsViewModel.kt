@@ -23,10 +23,16 @@ class StatisticsViewModel @Inject constructor(
         getStats()
     }
 
+import com.spendwise.app.domain.util.CurrencyConverter
+...
     private fun getStats() {
         transactionUseCases.getTransactions()
             .onEach { transactions ->
-                val stats = transactionUseCases.getCategoryStats(transactions)
+                // Convert all transactions to CNY for statistics
+                val cnyTransactions = transactions.map { 
+                    it.copy(amount = CurrencyConverter.convertToCny(it.amount, it.currency))
+                }
+                val stats = transactionUseCases.getCategoryStats(cnyTransactions)
                 _state.value = state.value.copy(
                     categoryStats = stats,
                     totalSpending = stats.sumOf { it.totalAmount }

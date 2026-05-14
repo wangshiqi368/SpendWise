@@ -12,5 +12,6 @@ data class TransactionEntity(
     val category: String,
     val date: String, // Stored as ISO string
     val note: String?,
-    val imagePath: String? = null
+    val imagePath: String? = null,
+    val currency: String = "CNY"
 )

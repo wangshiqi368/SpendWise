@@ -10,18 +10,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.spendwise.app.domain.model.Category
+import com.spendwise.app.domain.model.Currency
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,8 +38,11 @@ fun AddEditTransactionScreen(
     val titleState = viewModel.transactionTitle.value
     val amountState = viewModel.transactionAmount.value
     val selectedCategory = viewModel.selectedCategory.value
+    val selectedCurrency = viewModel.selectedCurrency.value
     val imagePath = viewModel.transactionImage.value
     val snackbarHostState = remember { SnackbarHostState() }
+    
+    var showCurrencyPicker by remember { mutableStateOf(false) }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -97,16 +98,34 @@ fun AddEditTransactionScreen(
                 singleLine = true
             )
             Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                value = amountState,
-                onValueChange = {
-                    viewModel.onEvent(AddEditTransactionEvent.EnteredAmount(it))
-                },
-                label = { Text("金额") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                singleLine = true
-            )
+            
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                OutlinedTextField(
+                    value = amountState,
+                    onValueChange = {
+                        viewModel.onEvent(AddEditTransactionEvent.EnteredAmount(it))
+                    },
+                    label = { Text("金额") },
+                    modifier = Modifier.weight(1f),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Surface(
+                    onClick = { showCurrencyPicker = true },
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    modifier = Modifier.height(56.dp).padding(top = 8.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "${selectedCurrency.code} ${selectedCurrency.symbol}", fontWeight = FontWeight.Bold)
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                        }
+                    }
+                }
+            }
+            
             Spacer(modifier = Modifier.height(24.dp))
             
             Text(text = "选择分类", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -173,6 +192,48 @@ fun AddEditTransactionScreen(
             }
         }
     }
+    
+    if (showCurrencyPicker) {
+        CurrencyPickerDialog(
+            onDismiss = { showCurrencyPicker = false },
+            onConfirm = { currency ->
+                viewModel.onEvent(AddEditTransactionEvent.ChangedCurrency(currency))
+                showCurrencyPicker = false
+            }
+        )
+    }
+}
+
+@Composable
+fun CurrencyPickerDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (Currency) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("选择币种") },
+        text = {
+            Column {
+                Currency.values().forEach { currency ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onConfirm(currency) }
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = currency.code, fontWeight = FontWeight.Medium)
+                        Text(text = currency.symbol, color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("关闭")
+            }
+        }
+    )
 }
 
 @Composable

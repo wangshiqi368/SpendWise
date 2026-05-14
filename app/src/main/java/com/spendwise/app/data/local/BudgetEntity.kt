@@ -8,5 +8,6 @@ data class BudgetEntity(
     @PrimaryKey
     val id: Int = 0, // We only need one budget for now
     val monthlyLimit: Double,
-    val month: String // Format: YYYY-MM
+    val month: String, // Format: YYYY-MM
+    val currency: String = "CNY"
 )

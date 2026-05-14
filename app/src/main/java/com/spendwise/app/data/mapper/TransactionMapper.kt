@@ -1,6 +1,7 @@
 package com.spendwise.app.data.mapper
 
 import com.spendwise.app.data.local.TransactionEntity
+import com.spendwise.app.domain.model.Currency
 import com.spendwise.app.domain.model.Transaction
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -15,7 +16,8 @@ fun TransactionEntity.toTransaction(): Transaction {
         category = category,
         date = LocalDateTime.parse(date, formatter),
         note = note,
-        imagePath = imagePath
+        imagePath = imagePath,
+        currency = Currency.fromCode(currency)
     )
 }
 
@@ -27,6 +29,7 @@ fun Transaction.toTransactionEntity(): TransactionEntity {
         category = category,
         date = date.format(formatter),
         note = note,
-        imagePath = imagePath
+        imagePath = imagePath,
+        currency = currency.code
     )
 }

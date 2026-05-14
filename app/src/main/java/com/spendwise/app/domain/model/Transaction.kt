@@ -9,5 +9,6 @@ data class Transaction(
     val category: String,
     val date: LocalDateTime,
     val note: String? = null,
-    val imagePath: String? = null
+    val imagePath: String? = null,
+    val currency: Currency = Currency.CNY
 )
