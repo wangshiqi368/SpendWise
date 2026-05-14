@@ -54,10 +54,15 @@ class TransactionListViewModel @Inject constructor(
                     transactionUseCases.setBudget(
                         Budget(
                             monthlyLimit = event.amount,
-                            month = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM"))
+                            month = state.value.selectedMonth
                         )
                     )
                 }
+            }
+            is TransactionListEvent.OnMonthChange -> {
+                _state.value = state.value.copy(selectedMonth = event.month)
+                getTransactions()
+                getBudget()
             }
             is TransactionListEvent.ExportToCsv -> {
                 viewModelScope.launch {
@@ -74,8 +79,7 @@ class TransactionListViewModel @Inject constructor(
 
     private fun getBudget() {
         getBudgetJob?.cancel()
-        val currentMonth = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM"))
-        getBudgetJob = transactionUseCases.getBudget(currentMonth)
+        getBudgetJob = transactionUseCases.getBudget(state.value.selectedMonth)
             .onEach { budget ->
                 _state.value = state.value.copy(
                     monthlyBudget = budget?.monthlyLimit ?: 0.0
@@ -88,10 +92,14 @@ class TransactionListViewModel @Inject constructor(
         getTransactionsJob?.cancel()
         getTransactionsJob = transactionUseCases.getTransactions()
             .onEach { transactions ->
+                val filteredByMonth = transactions.filter {
+                    it.date.format(DateTimeFormatter.ofPattern("yyyy-MM")) == state.value.selectedMonth
+                }
+
                 val filteredTransactions = if (state.value.searchQuery.isBlank()) {
-                    transactions
+                    filteredByMonth
                 } else {
-                    transactions.filter { 
+                    filteredByMonth.filter { 
                         it.title.contains(state.value.searchQuery, ignoreCase = true) ||
                         it.category.contains(state.value.searchQuery, ignoreCase = true)
                     }

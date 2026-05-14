@@ -2,6 +2,7 @@ package com.spendwise.app.presentation.transactions
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,6 +27,8 @@ import com.spendwise.app.presentation.util.Screen
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 import java.io.FileOutputStream
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +38,7 @@ fun TransactionListScreen(
 ) {
     val state = viewModel.state.value
     var showBudgetDialog by remember { mutableStateOf(false) }
+    var showMonthPicker by remember { mutableStateOf(false) }
     var transactionToDelete by remember { mutableStateOf<com.spendwise.app.domain.model.Transaction?>(null) }
     val context = LocalContext.current
 
@@ -51,7 +55,15 @@ fun TransactionListScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "SpendWise", fontWeight = FontWeight.Bold) },
+                title = { 
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable { showMonthPicker = true }
+                    ) {
+                        Text(text = state.selectedMonth, fontWeight = FontWeight.Bold)
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+                },
                 actions = {
                     IconButton(onClick = { navController.navigate(Screen.StatisticsScreen.route) }) {
                         Icon(imageVector = Icons.Default.PieChart, contentDescription = "Statistics")
@@ -98,6 +110,7 @@ fun TransactionListScreen(
                 totalSpending = state.totalSpending,
                 count = state.transactions.size,
                 monthlyBudget = state.monthlyBudget,
+                selectedMonth = state.selectedMonth,
                 onEditBudgetClick = { showBudgetDialog = true }
             )
 
@@ -144,6 +157,17 @@ fun TransactionListScreen(
         )
     }
 
+    if (showMonthPicker) {
+        MonthPickerDialog(
+            initialMonth = state.selectedMonth,
+            onDismiss = { showMonthPicker = false },
+            onConfirm = { month ->
+                viewModel.onEvent(TransactionListEvent.OnMonthChange(month))
+                showMonthPicker = false
+            }
+        )
+    }
+
     transactionToDelete?.let { transaction ->
         AlertDialog(
             onDismissRequest = { transactionToDelete = null },
@@ -170,6 +194,49 @@ fun TransactionListScreen(
 }
 
 @Composable
+fun MonthPickerDialog(
+    initialMonth: String,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var selectedMonth by remember { mutableStateOf(YearMonth.parse(initialMonth)) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("选择月份") },
+        text = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { selectedMonth = selectedMonth.minusMonths(1) }) {
+                    Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Previous Month")
+                }
+                Text(
+                    text = selectedMonth.format(DateTimeFormatter.ofPattern("yyyy-MM")),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                IconButton(onClick = { selectedMonth = selectedMonth.plusMonths(1) }) {
+                    Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Next Month")
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(selectedMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"))) }) {
+                Text("确定")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
+            }
+        }
+    )
+}
+
+@Composable
 fun EmptyState(isSearching: Boolean) {
     Column(
         modifier = Modifier
@@ -187,12 +254,12 @@ fun EmptyState(isSearching: Boolean) {
             text = if (isSearching) "未找到匹配的账单" else "还没有账单记录",
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = if (isSearching) "换个关键词试试吧" else "点击下方的 + 开始记账吧",
             fontSize = 14.sp,
-            color = Color.LightGray
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -227,12 +294,13 @@ fun SummaryCard(
     totalSpending: Double,
     count: Int,
     monthlyBudget: Double,
+    selectedMonth: String,
     onEditBudgetClick: () -> Unit
 ) {
     val progress = if (monthlyBudget > 0) (totalSpending / monthlyBudget).toFloat().coerceIn(0f, 1f) else 0f
     val progressColor = when {
-        progress >= 0.9f -> Color.Red
-        progress >= 0.7f -> Color(0xFFFFA500) // Orange
+        progress >= 0.9f -> MaterialTheme.colorScheme.error
+        progress >= 0.7f -> Color(0xFFFFA500)
         else -> MaterialTheme.colorScheme.primary
     }
 
@@ -250,7 +318,7 @@ fun SummaryCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "本月总支出", fontSize = 14.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Text(text = "${selectedMonth.split("-")[1]}月总支出", fontSize = 14.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
                 IconButton(onClick = onEditBudgetClick, modifier = Modifier.size(24.dp)) {
                     Icon(
                         imageVector = Icons.Default.Edit,
@@ -311,7 +379,7 @@ fun SummaryCard(
                     onClick = onEditBudgetClick,
                     modifier = Modifier.padding(top = 8.dp)
                 ) {
-                    Text(text = "+ 设置月度预算", fontSize = 12.sp)
+                    Text(text = "+ 设置本月预算", fontSize = 12.sp)
                 }
             }
         }
