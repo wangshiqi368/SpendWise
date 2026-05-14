@@ -50,11 +50,17 @@ fun TransactionListScreen(
         }
     }
 
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.PieChart
+...
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(text = "SpendWise", fontWeight = FontWeight.Bold) },
                 actions = {
+                    IconButton(onClick = { navController.navigate(Screen.StatisticsScreen.route) }) {
+                        Icon(imageVector = Icons.Default.PieChart, contentDescription = "Statistics")
+                    }
                     IconButton(onClick = { viewModel.onEvent(TransactionListEvent.ExportToCsv) }) {
                         Icon(imageVector = Icons.Default.Share, contentDescription = "Export CSV")
                     }

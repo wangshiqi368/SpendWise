@@ -6,5 +6,6 @@ data class TransactionUseCases(
     val addTransaction: AddTransaction,
     val getTransaction: GetTransaction,
     val getBudget: GetBudget,
-    val setBudget: SetBudget
+    val setBudget: SetBudget,
+    val getCategoryStats: GetCategoryStats
 )

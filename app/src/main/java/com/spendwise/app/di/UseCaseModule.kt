@@ -24,7 +24,8 @@ object UseCaseModule {
             addTransaction = AddTransaction(repository),
             getTransaction = GetTransaction(repository),
             getBudget = GetBudget(budgetRepository),
-            setBudget = SetBudget(budgetRepository)
+            setBudget = SetBudget(budgetRepository),
+            getCategoryStats = GetCategoryStats()
         )
     }
 }
