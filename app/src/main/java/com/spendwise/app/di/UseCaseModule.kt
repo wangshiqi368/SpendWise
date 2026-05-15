@@ -29,6 +29,7 @@ object UseCaseModule {
             getBudget = GetBudget(budgetRepository),
             setBudget = SetBudget(budgetRepository),
             getCategoryStats = GetCategoryStats(),
+            getCurrencyStats = GetCurrencyStats(),
             syncExchangeRates = SyncExchangeRates(exchangeRateRepository),
             getExchangeRates = GetExchangeRates(exchangeRateRepository)
         )

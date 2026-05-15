@@ -8,6 +8,7 @@ data class TransactionUseCases(
     val getBudget: GetBudget,
     val setBudget: SetBudget,
     val getCategoryStats: GetCategoryStats,
+    val getCurrencyStats: GetCurrencyStats,
     val syncExchangeRates: SyncExchangeRates,
     val getExchangeRates: GetExchangeRates
 )

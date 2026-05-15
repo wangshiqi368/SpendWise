@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.spendwise.app.domain.use_case.AddTransactionTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-05-14T18:50:24.047Z" hostname="wangshiqideMacBook-Air.local" time="0.622">
+<testsuite name="com.spendwise.app.domain.use_case.AddTransactionTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-05-15T06:44:50.130Z" hostname="wangshiqideMacBook-Air.local" time="0.614">
   <properties/>
-  <testcase name="add transaction with empty title, throws exception" classname="com.spendwise.app.domain.use_case.AddTransactionTest" time="0.511"/>
+  <testcase name="add transaction with empty title, throws exception" classname="com.spendwise.app.domain.use_case.AddTransactionTest" time="0.513"/>
   <testcase name="add transaction with zero or negative amount, throws exception" classname="com.spendwise.app.domain.use_case.AddTransactionTest" time="0.001"/>
-  <testcase name="add valid transaction, calls repository insert" classname="com.spendwise.app.domain.use_case.AddTransactionTest" time="0.11"/>
+  <testcase name="add valid transaction, calls repository insert" classname="com.spendwise.app.domain.use_case.AddTransactionTest" time="0.1"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
