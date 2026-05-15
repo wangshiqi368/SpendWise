@@ -41,6 +41,7 @@ fun AddEditTransactionScreen(
     val selectedCategory = viewModel.selectedCategory.value
     val selectedCurrency = viewModel.selectedCurrency.value
     val imagePath = viewModel.transactionImage.value
+    val isAnalyzing = viewModel.isAnalyzingOcr.value
     val snackbarHostState = remember { SnackbarHostState() }
     
     var showCurrencyPicker by remember { mutableStateOf(false) }
@@ -56,7 +57,7 @@ fun AddEditTransactionScreen(
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is AddEditTransactionViewModel.UiEvent.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(message = event.message)
+                    snackbarHostState.showSnackbar(event.message)
                 }
                 is AddEditTransactionViewModel.UiEvent.SaveTransaction -> {
                     navController.navigateUp()
@@ -150,8 +151,8 @@ fun AddEditTransactionScreen(
             Text(text = "附件图片", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (imagePath != null) {
-                Box(modifier = Modifier.size(120.dp)) {
+            Box(modifier = Modifier.size(120.dp)) {
+                if (imagePath != null) {
                     AsyncImage(
                         model = imagePath,
                         contentDescription = "Attachment",
@@ -171,24 +172,28 @@ fun AddEditTransactionScreen(
                             modifier = Modifier.background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
                         )
                     }
-                }
-            } else {
-                Surface(
-                    onClick = {
-                        photoPickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    },
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    modifier = Modifier.size(120.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.Add, contentDescription = null)
-                            Text(text = "上传图片", fontSize = 12.sp)
+                } else {
+                    Surface(
+                        onClick = {
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(Icons.Default.Add, contentDescription = null)
+                                Text(text = "上传图片", fontSize = 12.sp)
+                            }
                         }
                     }
+                }
+
+                if (isAnalyzing) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
         }

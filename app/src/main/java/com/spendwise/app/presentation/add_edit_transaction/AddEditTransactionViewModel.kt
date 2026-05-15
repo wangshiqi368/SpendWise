@@ -11,6 +11,7 @@ import com.spendwise.app.domain.model.Category
 import com.spendwise.app.domain.model.Currency
 import com.spendwise.app.domain.model.Transaction
 import com.spendwise.app.domain.use_case.TransactionUseCases
+import com.spendwise.app.domain.util.ReceiptAnalyzer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -39,6 +40,9 @@ class AddEditTransactionViewModel @Inject constructor(
 
     private val _transactionImage = mutableStateOf<String?>(null)
     val transactionImage: State<String?> = _transactionImage
+    
+    private val _isAnalyzingOcr = mutableStateOf(false)
+    val isAnalyzingOcr: State<Boolean> = _isAnalyzingOcr
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -78,12 +82,22 @@ class AddEditTransactionViewModel @Inject constructor(
             }
             is AddEditTransactionEvent.EnteredImage -> {
                 viewModelScope.launch {
-                    event.uri?.let { uri ->
-                        val path = FileUtil.saveImageToInternalStorage(application, uri)
-                        _transactionImage.value = path
-                    } ?: run {
-                        _transactionImage.value = null
+                    _isAnalyzingOcr.value = true
+                    val imagePath = event.uri?.let { uri ->
+                        FileUtil.saveImageToInternalStorage(application, uri)
                     }
+                    _transactionImage.value = imagePath
+
+                    if (imagePath != null && event.uri != null) {
+                        val amount = ReceiptAnalyzer.analyze(application, event.uri)
+                        if (amount != null) {
+                            _transactionAmount.value = String.format("%.2f", amount)
+                            _eventFlow.emit(UiEvent.ShowSnackbar("✨ AI 已自动识别金额：${_transactionAmount.value}"))
+                        } else {
+                            _eventFlow.emit(UiEvent.ShowSnackbar("无法自动识别金额"))
+                        }
+                    }
+                    _isAnalyzingOcr.value = false
                 }
             }
             is AddEditTransactionEvent.ChangedCurrency -> {

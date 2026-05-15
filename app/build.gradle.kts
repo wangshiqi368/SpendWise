@@ -70,23 +70,28 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
-// Navigation
-implementation(libs.androidx.navigation.compose)
 
-// Coil
-implementation(libs.coil.compose)
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
 
-// Network
-implementation(libs.retrofit)
-implementation(libs.converter.gson)
-implementation(libs.okhttp)
-implementation(libs.okhttp.logging)
+    // Coil
+    implementation(libs.coil.compose)
 
-// Testing
+    // Network
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+
+    // AI / ML
+    implementation(libs.mlkit.text.recognition)
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    // Testing
     testImplementation(libs.junit)
-testImplementation(libs.mockk)
-testImplementation(libs.kotlinx.coroutines.test)
-androidTestImplementation(libs.androidx.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
